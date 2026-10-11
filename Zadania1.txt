@@ -1,0 +1,90 @@
+ZMIANA HASLA:
+ALTER USER NSTMSU_KARCZYKOWSKIM IDENTIFIED BY "..." REPLACE "mariusz";
+
+Stworzenie tabel:
+
+CREATE TABLE regions (region_id NUMBER PRIMARY KEY, region_name VARCHAR(50));
+
+CREATE TABLE countries (country_id NUMBER PRIMARY KEY, country_name VARCHAR(50), region_id NUMBER);
+
+CREATE TABLE locations (location_id NUMBER PRIMARY KEY, street_address VARCHAR(50), postal_code VARCHAR(50), city VARCHAR(50), state_province VARCHAR(50), country_id NUMBER);
+
+CREATE TABLE jobs (job_id NUMBER PRIMARY KEY, job_title VARCHAR(50), min_salary NUMBER, max_salary NUMBER);
+
+CREATE TABLE departments (department_id NUMBER PRIMARY KEY, department_name VARCHAR(50), manager_id NUMBER, location_id NUMBER);
+
+CREATE TABLE employees (employee_id NUMBER PRIMARY KEY, first_name VARCHAR(50), last_name VARCHAR(50), email VARCHAR(50), phone_number VARCHAR(50), hire_date DATE, job_id NUMBER, salary NUMBER, commission_pct NUMBER, manager_id NUMBER, department_id NUMBER);
+
+CREATE TABLE job_history (employee_id NUMBER, start_date DATE, end_date DATE, job_id NUMBER, department_id NUMBER);
+
+ALTER TABLE job_history ADD PRIMARY KEY (employee_id, start_date);
+
+Ustawienie kluczy obcych i modyfikacja tabel
+
+ALTER TABLE countries ADD FOREIGN KEY (region_id) REFERENCES regions(region_id);
+
+ALTER TABLE locations ADD FOREIGN KEY (country_id) REFERENCES countries(country_id);
+
+ALTER TABLE departments ADD FOREIGN KEY (location_id) REFERENCES locations(location_id);
+
+ALTER TABLE employees ADD FOREIGN KEY (job_id) REFERENCES jobs(job_id);
+
+ALTER TABLE employees ADD FOREIGN KEY (department_id) REFERENCES departments(department_id);
+
+ALTER TABLE employees ADD FOREIGN KEY (manager_id) REFERENCES employees(employee_id);
+
+ALTER TABLE departments ADD FOREIGN KEY (manager_id) REFERENCES employees(employee_id);
+
+ALTER TABLE job_history ADD FOREIGN KEY (employee_id) REFERENCES employees(employee_id);
+
+ALTER TABLE job_history ADD FOREIGN KEY (job_id) REFERENCES jobs(job_id);
+
+ALTER TABLE job_history ADD FOREIGN KEY (department_id) REFERENCES departments(department_id);
+
+Warunek JOBS
+
+ALTER TABLE jobs
+ADD CHECK (max_salary >= min_salary + 2000);
+
+Zadanie 2
+
+INSERT INTO jobs VALUES (1, 'Street Cleaner', 1000, 3000);
+
+INSERT INTO jobs VALUES (2, 'Toiler Cleaner', 2000, 5000);
+
+INSERT INTO jobs VALUES (3, 'Room Cleaner', 3300, 8500);
+
+INSERT INTO jobs VALUES (4, 'Windows Cleaner', 5000, 7000);
+
+Zadanie 3
+
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+VALUES (1, 'Jan', 'Kowal', 'jan@kowal.pl', DATE '2002-01-01', 1, 3000);
+
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+VALUES (2, 'Hanna', 'Bowal', 'hanna@bowal.pl', DATE '2001-02-14', 1, 5500);
+
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+VALUES (3, 'Jakub', 'Nowal', 'jakub@nowal.com', DATE '2003-12-12', 2, 4500);
+
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+VALUES (4, 'Marian', 'Lowal', 'marian@lowal.com', DATE '2005-08-09', 4, 7700);
+
+Zadanie 4.
+
+UPDATE employees
+SET manager_id = 1 WHERE employee_id IN (2, 3);
+
+Zadanie 5.
+UPDATE jobs SET min_salary = min_salary + 500, max_salary = max_salary + 500 WHERE LOWER(job_title) LIKE '%b%' OR LOWER(job_title) LIKE '%s%';
+
+Zadanie 6
+
+DELETE FROM jobs
+WHERE max_salary > 9000;
+
+Zadanie 7
+
+DROP TABLE job_history;
+
+FLASHBACK TABLE job_history TO BEFORE DROP;
